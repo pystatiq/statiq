@@ -1,0 +1,12 @@
+<html>
+
+<head>
+    {% block head %}
+    {% for el in head %}
+    {{ el|head_element|safe }}
+    {% endfor %}
+    {% endblock %}
+</head>
+
+<body>{% block content %}{% endblock %}</body>
+</html>
