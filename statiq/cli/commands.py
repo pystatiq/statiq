@@ -1,7 +1,7 @@
 import argparse
 import os
 import sys
-
+from importlib.metadata import version
 
 def build():
     from statiq import Builder
@@ -53,7 +53,7 @@ def init(example):
 def main():
     parser = argparse.ArgumentParser(description="Statiq CLI")
     # add version argument
-    parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.0.2")
+    parser.add_argument("-v", "--version", action="store_true")
     # subparser for init and build commans
     sub_parsers = parser.add_subparsers(dest="command")
     subcommand_init = sub_parsers.add_parser("init")
@@ -66,14 +66,17 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
-    if args.command == "init":
-        init(args.example)
-    elif args.command == "build":
-        build()
-    elif args.command == "static":
-        static(args.static_command)
+    if args.version:
+        print(version("statiq"))
     else:
-        parser.print_help()
+        if args.command == "init":
+            init(args.example)
+        elif args.command == "build":
+            build()
+        elif args.command == "static":
+            static(args.static_command)
+        else:
+            parser.print_help()
 
 
 if __name__ == "__main__":
