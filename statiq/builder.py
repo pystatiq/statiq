@@ -23,6 +23,31 @@ class Builder:
         self._load_globals_from_config()
         self.register_directory(directory_path)
 
+    def _run_pre_data_plugins(self, *args, **kwargs):
+        if self.config and hasattr(self.config, "PLUGINS"):
+            for plugin in self.config.PLUGINS:
+                if hasattr(plugin, "pre_data"):
+                    plugin.pre_data(*args, **kwargs)
+    
+    def _run_post_data_plugins(self, *args, **kwargs):
+        if self.config and hasattr(self.config, "PLUGINS"):
+            for plugin in self.config.PLUGINS:
+                if hasattr(plugin, "post_data"):
+                    plugin.post_data(*args, **kwargs)
+    
+    def _run_pre_render_plugins(self, *args, **kwargs):
+        if self.config and hasattr(self.config, "PLUGINS"):
+            for plugin in self.config.PLUGINS:
+                if hasattr(plugin, "pre_render"):
+                    plugin.pre_render(*args, **kwargs)
+    
+    def _run_post_render_plugins(self, *args, **kwargs):
+        if self.config and hasattr(self.config, "PLUGINS"):
+            for plugin in self.config.PLUGINS:
+                if hasattr(plugin, "post_render"):
+                    plugin.post_render(*args, **kwargs)
+    
+
     def _load_config(self):
         # load config.py from the root of the project
         config_path = os.path.join(os.getcwd(), "config.py")
@@ -91,11 +116,21 @@ class Builder:
 
     def build(self):
         for route in self.routes:
+
+            self._run_pre_data_plugins(**route["params"])
             data = route["page"].get_data(**route["params"])
+            self._run_post_data_plugins(data=data, **route["params"])
+
+            self._run_pre_render_plugins(**route["params"])
             head = route["page"].get_head(**route["params"])
+            self._run_pre_render_plugins(head=head, **route["params"])
+
+            self._run_post_render_plugins(**route["params"])
             html = route["template"].render(
                 **data, head=head, path_parameters=route["params"]
             )
+            self._run_post_render_plugins(html=html, **route["params"])
+
             filepath = route["page"].get_url(**route["params"])
 
             print("Generating page:", filepath)

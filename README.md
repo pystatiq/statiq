@@ -8,6 +8,8 @@ Statiq is a powerful Python framework designed to simplify the process of genera
 - [Usage](#usage)
 - [Page Object](#page-object)
 - [Config](#config)
+- [Plugins](#plugins)
+- [Static files](#static-files)
 - [Contributing](#contributing)
 ## Features
 
@@ -341,3 +343,146 @@ GLOBALS = {
     "my_other_global": lambda: "some other value",
 }
 ```
+
+## Plugins
+Statiq supports plugins that can be used to extend the functionality of the framework. To add a plugin you need to define a `PLUGINS` list in your `config.py` file.
+
+Statiq provides an auxiliary class `PluginBase` that can be used to create plugins.
+
+Each plugin can have six methods which are called during different steps of the build process.
+
+- **pre_data**: Called before the data is generated.
+- **post_data**: Called after the data is generated.
+- **pre_head**: Called before the head is generated.
+- **post_head**: Called after the head is generated.
+- **pre_render**: Called before the page is rendered.
+- **post_render**: Called after the page is rendered.
+
+Every `pre_*` method has access to `path parameters` passed as keyword arguments.
+
+Every `post_*` method has access to `path parameters` and additional keyword argument respectively:
+- `post_data(data=data, **path_parameters)`
+- `post_head(head=head, **path_parameters)`
+- `post_render(html=html, **path_parameters)`
+
+```python
+# my_plugin.py
+from statiq import PluginBase
+
+class MyPlugin(PluginBase):
+    def pre_data(self, *args, **kwargs):
+       # alter the route params
+       kwargs["my_arg"] = "some value"
+
+    def post_data(self, *args, **kwargs):
+        # get the data
+        data = kwargs.get("data")
+        # do something with the data
+        data["some_key"] = "some value"    
+
+    def pre_head(self, *args, **kwargs):
+        # alter the route params
+        kwargs["my_arg"] = "some value"
+    
+    def post_head(self, *args, **kwargs):
+        # get the head
+        head = kwargs.get("head")
+        # do something with the head
+        head.append("<meta name='some-meta' content='some value'>")
+
+    def pre_render(self, *args, **kwargs):
+        # alter the route params
+        kwargs["my_arg"] = "some value"
+    
+    def post_render(self, *args, **kwargs):
+        # get the html
+        html = kwargs.get("html")
+        # do something with the html
+        html = html.replace("some text", "some other text")
+```
+    
+```python
+# config.py
+from my_plugin import my_plugin
+
+PLUGINS = [
+    my_plugin,
+]
+```
+
+The plugins will be executed in the order they are defined in the `PLUGINS` list.
+
+For example:
+
+```python
+# config.py
+from my_plugins import my_plugin1, my_plugin2
+
+PLUGINS = [
+    my_plugin1,
+    my_plugin2,
+]
+```
+
+Given the plugins implement all methods, the order will be as follows:
+1. `my_plugin1.pre_data`
+2. `my_plugin2.pre_data`
+3. `get_data() from the page.py`
+4. `my_plugin1.post_data`
+5. `my_plugin2.post_data`
+6. `my_plugin1.pre_head`
+7. `my_plugin2.pre_head`
+8. `get_head() from the page.py`
+9. `my_plugin1.post_head`
+10. `my_plugin2.post_head`
+11. `my_plugin1.pre_render`
+12. `my_plugin2.pre_render`
+13. `render the page`
+14. `my_plugin1.post_render`
+15. `my_plugin2.post_render`
+    
+## Static files
+Statiq can handle parsing and copying of static files
+
+In the `config.py` file you need to add two properties `STATIC_PATHS` and `STATIC_OUTPUT_PATHS`.
+
+```python
+STATIC_PATHS = [
+    {
+        "path": "src"
+    }
+]
+
+STATIC_OUTPUT_PATH = "output"
+```
+
+Now you just need to run the `static copy` command and the files will be copied to the `output` folder.
+
+```sh
+statiq static copy
+```
+
+### STATIC_PATHS
+The `STATIC_PATHS` property is used to define the paths to the static files that will be parsed and copied to the `STATIC_OUTPUT_PATH` folder.
+
+It should be a list of dictionaries containg `path` which points to a folder or a file and a *optional* `regex` property which is used to filter the files that will be parsed.
+
+```python
+STATIC_PATHS = [
+    {
+        "path": "src",
+        "regex" r"(.*)\.html$",
+    }
+]
+```
+
+### STATIC_OUTPUT_PATH
+The `STATIC_OUTPUT_PATH` property is used to define the path to the folder where the static files will be copied.
+
+```python
+STATIC_OUTPUT_PATH = "output"
+```
+
+## Contributing
+
+Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.

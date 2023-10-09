@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 
+from importlib.metadata import version
+
 
 def build():
     from statiq import Builder
@@ -16,6 +18,16 @@ def build():
         output_dir=output_dir,
     )
     builder.build()
+
+
+def static(command):
+    from statiq import StaticFileHandler
+
+    static_file_handler = StaticFileHandler()
+    if command == "copy":
+        static_file_handler.copy()
+    else:
+        print("Unknown command")
 
 
 def init(example):
@@ -45,7 +57,7 @@ def init(example):
 def main():
     parser = argparse.ArgumentParser(description="Statiq CLI")
     # add version argument
-    parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.0.2")
+    parser.add_argument("-v", "--version", action="store_true")
     # subparser for init and build commans
     sub_parsers = parser.add_subparsers(dest="command")
     subcommand_init = sub_parsers.add_parser("init")
@@ -53,14 +65,22 @@ def main():
 
     subcommand_build = sub_parsers.add_parser("build")
 
+    subcommand_static = sub_parsers.add_parser("static")
+    subcommand_static.add_argument("static_command", help="command to run")
+
     args = parser.parse_args(sys.argv[1:])
 
-    if args.command == "init":
-        init(args.example)
-    elif args.command == "build":
-        build()
+    if args.version:
+        print(version("statiq"))
     else:
-        parser.print_help()
+        if args.command == "init":
+            init(args.example)
+        elif args.command == "build":
+            build()
+        elif args.command == "static":
+            static(args.static_command)
+        else:
+            parser.print_help()
 
 
 if __name__ == "__main__":
