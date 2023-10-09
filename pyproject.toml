@@ -1,4 +1,5 @@
 [project]
+name = "statiq"
 dynamic = ["version"]
 
 [build-system]
