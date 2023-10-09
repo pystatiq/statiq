@@ -1,7 +1,9 @@
 import argparse
 import os
 import sys
+
 from importlib.metadata import version
+
 
 def build():
     from statiq import Builder
@@ -17,6 +19,7 @@ def build():
     )
     builder.build()
 
+
 def static(command):
     from statiq import StaticFileHandler
 
@@ -25,7 +28,8 @@ def static(command):
         static_file_handler.copy()
     else:
         print("Unknown command")
- 
+
+
 def init(example):
     """copy given example directory from ../examples/ to current directory"""
     source_path = os.path.join(

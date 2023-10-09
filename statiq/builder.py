@@ -47,6 +47,7 @@ class Builder:
                 if hasattr(plugin, "post_render"):
                     plugin.post_render(*args, **kwargs)
     
+
     def _load_config(self):
         # load config.py from the root of the project
         config_path = os.path.join(os.getcwd(), "config.py")
@@ -115,7 +116,7 @@ class Builder:
 
     def build(self):
         for route in self.routes:
-            
+
             self._run_pre_data_plugins(**route["params"])
             data = route["page"].get_data(**route["params"])
             self._run_post_data_plugins(data=data, **route["params"])

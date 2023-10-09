@@ -343,6 +343,7 @@ GLOBALS = {
     "my_other_global": lambda: "some other value",
 }
 ```
+
 ## Plugins
 Statiq supports plugins that can be used to extend the functionality of the framework. To add a plugin you need to define a `PLUGINS` list in your `config.py` file.
 
