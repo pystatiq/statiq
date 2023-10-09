@@ -7,8 +7,7 @@ authors = [
     {name = "Marcin Giziński", email = "ooizig@gmail.com"},
     {name = "Krzysztof Koziarek", email = "krzynio@gmail.com"}
 ]
-homepage = "http://github.com/pystatiq/statiq"
-license = "MIT" 
+license = {file = "LICENSE"}
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.11",
@@ -19,16 +18,19 @@ dependencies = [
 ]
 [project.urls]
 repository = "http://github.com/pystatiq/statiq"
+homepage = "http://github.com/pystatiq/statiq"
 
 [project.scripts]
 statiq = "statiq.cli.commands:main"
 
 [project.optional-dependencies]
 
-[project.packages]
-include = ["statiq"]
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["statiq*"]  # package names should match these glob patterns (["*"] by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
 
-[project.package_data]
+[tool.setuptools.package-data]
 statiq = [
     "examples/demo/config.py",
     "examples/demo/pages/*.py",

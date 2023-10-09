@@ -144,3 +144,4 @@ dmypy.json
 /templates/
 /data/
 /config.py
+/statiq/_version.py
