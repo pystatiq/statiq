@@ -1,9 +1,46 @@
 [project]
 name = "statiq"
 dynamic = ["version"]
+description = "Statiq is a static site generator"
+readme = "README.md"
+authors = [
+    {name = "Marcin Giziński", email = "ooizig@gmail.com"},
+    {name = "Krzysztof Koziarek", email = "krzynio@gmail.com"}
+]
+homepage = "http://github.com/pystatiq/statiq"
+license = "MIT" 
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    'Jinja2 >= 3.1.2',
+    'importlib_metadata; python_version < "3.8"',
+]
+[project.urls]
+repository = "http://github.com/pystatiq/statiq"
+
+[project.scripts]
+statiq = "statiq.cli.commands:main"
+
+[project.optional-dependencies]
+
+[project.packages]
+include = ["statiq"]
+
+[project.package_data]
+statiq = [
+    "examples/demo/config.py",
+    "examples/demo/pages/*.py",
+    "examples/demo/pages/*/*.py",
+    "examples/demo/templates/*.html",
+    "examples/demo/templates/*/*.html",
+    "templates/*.html",
+]
 
 [build-system]
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
+write_to = "statiq/_version.py"
