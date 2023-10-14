@@ -32,11 +32,12 @@ class StaticFileHandler(FileHandler):
                 yield static_path, static_path.replace(os.getcwd(), output_path)
     
     def copy(self):
-        """ Copy files to output directory
+        """ Copy files to output directory, creating  necessary directories
         """
         for source, target in self.parse():
-            os.makedirs(target, exist_ok=True)
+            target_dir = os.path.dirname(target)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
             with open(source, "rb") as f:
-                content = f.read()
-            with open(source, "wb") as f:
-                f.write(content)
+                with open(target, "wb") as t:
+                    t.write(f.read())
